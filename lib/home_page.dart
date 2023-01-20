@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reload_test/bloc/student_bloc.dart';
-import 'package:reload_test/my_scroll_view.dart';
+import 'package:reload_test/infinite_scroll_column.dart';
+import 'package:reload_test/infinite_scroll_list_view.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -28,19 +29,31 @@ class _HomePageState extends State<HomePage> {
         child: BlocBuilder<StudentBloc, StudentState>(
           builder: (context, state) {
             if(state is LoadStudentSuccess){
-              return MyScrollView(
-                itemCount: state.students.length,
-                builder: (context, index) {
+              return InfiniteScrollColumn(
+                children: List.generate(state.students.length, (index) {
                   return ListTile(
                     title: Text(state.students[index].name),
                   );
-                },
+                }),
                 onLoadMore: () async {
                   // await Future.delayed(const Duration(seconds: 10));
                   final StudentBloc bloc = BlocProvider.of<StudentBloc>(context)..loadMoreStudents();
                   await bloc.stream.firstWhere((state) => state is LoadStudentSuccess || state is LoadStudentFailed);
                 },
               );
+              // return InfiniteScrollListView(
+              //   itemCount: state.students.length,
+              //   builder: (context, index) {
+              //     return ListTile(
+              //       title: Text(state.students[index].name),
+              //     );
+              //   },
+              //   onLoadMore: () async {
+              //     // await Future.delayed(const Duration(seconds: 10));
+              //     final StudentBloc bloc = BlocProvider.of<StudentBloc>(context)..loadMoreStudents();
+              //     await bloc.stream.firstWhere((state) => state is LoadStudentSuccess || state is LoadStudentFailed);
+              //   },
+              // );
             }
             return const Padding(
               padding: EdgeInsets.all(20),

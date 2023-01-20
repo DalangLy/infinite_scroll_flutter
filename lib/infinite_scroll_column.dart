@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
 
-class MyScrollView extends StatefulWidget {
-  final int itemCount;
-  final Widget Function(BuildContext context, int index) builder;
+class InfiniteScrollColumn extends StatefulWidget {
+  final List<Widget> children;
   final Function() onLoadMore;
   final Widget? loadingIndicator;
-  const MyScrollView({Key? key, required this.itemCount, required this.builder, required this.onLoadMore, this.loadingIndicator}) : super(key: key);
+  const InfiniteScrollColumn({Key? key, required this.children, required this.onLoadMore, this.loadingIndicator,}) : super(key: key);
 
   @override
-  State<MyScrollView> createState() => _MyScrollViewState();
+  State<InfiniteScrollColumn> createState() => _InfiniteScrollColumnState();
 }
 
-class _MyScrollViewState extends State<MyScrollView> {
+class _InfiniteScrollColumnState extends State<InfiniteScrollColumn> {
+
   late final ScrollController _scrollController;
 
   @override
   void initState() {
+
     _scrollController = ScrollController();
 
     _scrollController.addListener(_scrollListener);
@@ -58,18 +59,14 @@ class _MyScrollViewState extends State<MyScrollView> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
+    return SingleChildScrollView(
       controller: _scrollController,
       physics: const BouncingScrollPhysics(
         parent: AlwaysScrollableScrollPhysics(),
       ),
-      itemCount: widget.itemCount+1,
-      itemBuilder: (context, index) {
-        if(index >= widget.itemCount){
-          return _showLoadingIndicator();
-        }
-        return widget.builder(context, index);
-      },
+      child: Column(
+        children: widget.children..add(_showLoadingIndicator()),
+      ),
     );
   }
 

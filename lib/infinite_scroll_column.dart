@@ -65,7 +65,9 @@ class _InfiniteScrollColumnState extends State<InfiniteScrollColumn> {
         parent: AlwaysScrollableScrollPhysics(),
       ),
       child: Column(
-        children: widget.children..add(_showLoadingIndicator()),
+        children: [
+          ...widget.children, _showLoadingIndicator(),
+        ],
       ),
     );
   }
